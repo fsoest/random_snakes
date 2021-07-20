@@ -3,7 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-def random_snake(g, d):
+def random_snake(g, d, reps=10):
     # Calculate shortest path lengths
     spl = dict(nx.all_pairs_shortest_path_length(g))
 
@@ -19,7 +19,7 @@ def random_snake(g, d):
     plan.append(n_0[plan_index])
     route.append(initial_node)
 
-    for _ in range(10):
+    for _ in range(reps):
         # Get neighbours of last node in plan or x_0
         try:
             neighbours = list(g[plan[-1]])
@@ -44,9 +44,7 @@ def random_snake(g, d):
         else:
             route.append(plan[0])
             plan.remove(plan[0])
-
-    # print(route)
-    # print(plan)
+    return route
 
 
 if __name__ == '__main__':
@@ -55,3 +53,8 @@ if __name__ == '__main__':
     square_lattice = nx.grid_graph((lattice_size, lattice_size), periodic=True)
 
     random_snake(square_lattice, 2)
+
+    xx, yy = np.meshgrid(np.arange(lattice_size), np.arange(lattice_size))
+
+    plt.scatter(xx, yy)
+    plt.show()
