@@ -12,10 +12,10 @@ def diff(new, old, L):
     """
     dx = new[0] - old[0]
     if np.abs(dx) > L / 2:
-        dx = np.sign(dx) * L - dx
+        dx = -1 * np.sign(dx) * L + dx
     dy = new[1] - old[1]
     if np.abs(dy) > L / 2:
-        dy = np.sign(dy) * L - dy
+        dy = -1 * np.sign(dy) * L + dy
     return (dx, dy)
 
 
