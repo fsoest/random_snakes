@@ -1,16 +1,20 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from snek import random_snake
+from snek import random_snake, make_r
 
 if __name__ == '__main__':
     np.random.seed(42)
     lattice_size = 50
     square_lattice = nx.grid_graph((lattice_size, lattice_size), periodic=True)
     spl = dict(nx.all_pairs_shortest_path_length(square_lattice))
-    route, steps = random_snake(square_lattice, 8, spl, lattice_size, reps=100)
+
+    route, steps = random_snake(square_lattice, 2, spl, lattice_size, reps=100)
 
     xx, yy = np.meshgrid(np.arange(lattice_size), np.arange(lattice_size))
+
+    print(make_r(steps))
+    print(np.linalg.norm(make_r(steps), ord=1, axis=1))
 
     route = np.array(route)
     print(steps)

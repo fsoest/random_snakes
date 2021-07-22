@@ -3,24 +3,20 @@ import numpy as np
 import networkx as nx
 
 
-def diff(new, old, D):
+def diff(new, old, L):
     """
     Implement the correct distance over boundaries
     :param a:
     :param b:
     :return:
     """
-    x = (new[0] - old[0]) % D
-    y = (new[1] - old[1]) % D
-    # if new[0] < old[0]:
-    #     x = min(np.abs(new[0] - old[0]), np.abs(new[0] - old[0] + D))
-    # else:
-    #     x = max(new[0] - old[0], new[0] - old[0] - D)
-    # if new[1] < old[1]:
-    #     y = min(np.abs(new[1] - old[1]), np.abs(new[1] - old[1] + D))
-    # else:
-    #     y = max(new[1] - old[1], new[1] - old[1] - D)
-    return (x, y)
+    dx = new[0] - old[0]
+    if np.abs(dx) > L / 2:
+        dx = np.sign(dx) * L - dx
+    dy = new[1] - old[1]
+    if np.abs(dy) > L / 2:
+        dy = np.sign(dy) * L - dy
+    return (dx, dy)
 
 
 def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattice_size: int, reps: int = 50):
@@ -82,5 +78,7 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
 
 
 def make_r(steps):
-    pass
-    # r = np.
+    r = np.zeros((len(steps) + 1, 2))
+    for i, step in enumerate(steps):
+        r[i + 1] = r[i] + np.array([step['dx'], step['dy']])
+    return r
