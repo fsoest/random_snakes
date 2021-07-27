@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import networkx as nx
+
 from snek import *
 from save import *
 
@@ -8,7 +10,7 @@ if __name__ == '__main__':
     ds = [1, 2, 4, 8, 16]
     walks = 100
     walk_length = 100
-    msd = np.zeros((len(ds), walks, walk_length))
+    md = np.zeros((len(ds), walks, walk_length))
 
     # Initialise lattice
     lattice_size = 50
@@ -20,7 +22,7 @@ if __name__ == '__main__':
     for i, d in enumerate(ds):
         for j in range(walks):
             route, steps = random_snake(square_lattice, d, spl, lattice_size, reps=walk_length)
-            msd[i, j] = np.linalg.norm(make_r(steps), ord=1, axis=1)
+            md[i, j] = np.linalg.norm(make_r(steps)[0], ord=1, axis=1)
         plt.plot(np.mean(msd[i], axis=0), label=d)
     plt.legend(title='$d$')
     plt.xlabel('$t$')

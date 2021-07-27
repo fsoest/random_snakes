@@ -19,9 +19,7 @@ def diff(new, old, L):
     return (dx, dy)
 
 
-def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattice_size: int, reps: int = 50):
-    # Calculate shortest path lengths
-
+def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattice_size: int, reps: int = 50, points=None):
     initial_node_index = np.random.choice(len(g))
     initial_node = list(g)[initial_node_index]
 
@@ -41,17 +39,15 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
             neighbours = list(g[plan[-1]])
         except:
             neighbours = list(g[route[-1]])
-            # print(plan)
-            # print(route)
-        # # Check suitability of neighbours
-        suitables = []
         # print('Plan', plan)
         # print('route', route)
         # print('neighbours', neighbours)
+        # # Check suitability of neighbours
+        suitables = []
         for n in neighbours:
             # Check for empty plan
             if len(plan) != 0:
-                if spl[route[-1]][n] == spl[route[-1]][plan[-1]] + spl[plan[-1]][n] and spl[route[-1]][n] <= d:
+                if np.abs(spl[route[-1]][n] - spl[route[-1]][plan[-1]] - spl[plan[-1]][n]) < 1e-16 and spl[route[-1]][n] <= d:
                     suitables.append(n)
             else:
                 suitables = list(g[route[-1]])
@@ -62,7 +58,10 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
             plan.append(suitables[n_index])
         else:
             # Perform a step
-            dx, dy = diff(plan[0], route[-1], lattice_size)
+            try:
+                dx, dy = diff(plan[0], route[-1], lattice_size)
+            except:
+                dx, dy = diff(points[plan[0]], points[route[-1]], lattice_size)
             # Calculate time of step, given by 2-norm of dx, dy
             t += np.sqrt(dx ** 2 + dy ** 2)
             step = {
@@ -79,6 +78,8 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
 
 def make_r(steps):
     r = np.zeros((len(steps) + 1, 2))
+    t = np.zeros((len(steps) + 1))
     for i, step in enumerate(steps):
         r[i + 1] = r[i] + np.array([step['dx'], step['dy']])
-    return r
+        t[i + 1] = step['t']
+    return r, t
