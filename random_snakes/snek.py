@@ -32,7 +32,7 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
     while len(route) < reps:
         # Get a list of suitable neighbours
         if plan:
-            # If there is a planned route, get neighbours of the last node in the plan
+            # There is a planned route, get neighbours of the last node in the plan
             neighbours = list(g[plan[-1]])
 
             # Filter the neighbors
@@ -46,12 +46,19 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
                 )
             ]
         else:
-            # Else get the neighbors of the last visited node
-            suitable_neighbours = list(g[route[-1]])
+            # Get the neighbors of the last visited node
+            neighbours = list(g[route[-1]])
+
+            # Check if they are within distance d
+            suitable_neighbours = [
+                n for n in neighbours
+                if spl[route[-1]][n] <= d
+            ]
 
         if print_steps:
             print('Plan', plan)
             print('Route', route)
+            print('Neighbours:', neighbours)
             print('Suitable neighbours:', suitable_neighbours)
 
         # Choose random neighbour from list of suitable neighbours if list nonempty
