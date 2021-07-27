@@ -30,34 +30,34 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
     t = 0
 
     while len(route) < reps:
-        # Get possible neighbours
+        # Get a list of suitable neighbours
         if plan:
             # If there is a planned route, get neighbours of the last node in the plan
             neighbours = list(g[plan[-1]])
+
+            # Filter the neighbors
+            suitable_neighbours = [
+                n for n in neighbours
+                if (
+                        # This is the fastest route to the node
+                        np.abs(spl[route[-1]][n] - spl[route[-1]][plan[-1]] - spl[plan[-1]][n]) < 1e-16
+                        # The node is within distance d of the current node
+                        and spl[route[-1]][n] <= d
+                )
+            ]
         else:
             # Else get the neighbors of the last visited node
-            neighbours = list(g[route[-1]])
-
-        # Check suitability of neighbours
-        suitables = []
-        for n in neighbours:
-            # Check for empty plan
-            if len(plan) != 0:
-                if np.abs(spl[route[-1]][n] - spl[route[-1]][plan[-1]] - spl[plan[-1]][n]) < 1e-16 and spl[route[-1]][n] <= d:
-                    suitables.append(n)
-            else:
-                suitables = list(g[route[-1]])
+            suitable_neighbours = list(g[route[-1]])
 
         if print_steps:
             print('Plan', plan)
             print('Route', route)
-            print('Neighbours', neighbours)
-            print('Suitable neighbours:', suitables)
+            print('Suitable neighbours:', suitable_neighbours)
 
         # Choose random neighbour from list of suitable neighbours if list nonempty
-        if len(suitables) > 0:
-            n_index = np.random.choice(np.arange(len(suitables)))
-            plan.append(suitables[n_index])
+        if len(suitable_neighbours) > 0:
+            n_index = np.random.choice(np.arange(len(suitable_neighbours)))
+            plan.append(suitable_neighbours[n_index])
         else:
             # Perform a step
             try:
