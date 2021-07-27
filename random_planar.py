@@ -1,8 +1,8 @@
 import networkx as nx
 from planar import make_planar_graph
 import numpy as np
-from snek import random_snake, make_r
-from save import *
+from random_snakes.snek import random_snake, make_r
+from random_snakes.save import *
 import matplotlib.pyplot as plt
 
 

@@ -2,7 +2,7 @@ import pathlib
 import pickle
 
 
-OBJ_DIR = pathlib.Path(__file__).parent / 'obj'
+OBJ_DIR = pathlib.Path(__file__).parent.parent / 'obj'
 
 
 def save_obj(obj, name):

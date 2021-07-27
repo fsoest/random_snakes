@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
-import networkx as nx
 
-from snek import *
-from save import *
+from random_snakes.snek import *
+from random_snakes.save import *
 
 
 if __name__ == '__main__':
