@@ -1,5 +1,7 @@
 from typing import Any
 from typing import Dict
+from typing import List
+from typing import Tuple
 
 import networkx as nx
 import numpy as np
@@ -18,10 +20,18 @@ def diff(new, old, edge_length):
     return dx, dy
 
 
+def select_random_tuple_from_list(tuple_list: List[Tuple]) -> Tuple:
+    """
+    Return a random tuple from the provided list.
+    Necessary because numpy.choice converts lists of tuples into array.
+    """
+    ind = np.random.choice(len(tuple_list))
+    return tuple_list[ind]
+
+
 def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattice_size: int, reps: int = 50,
                  points=None, print_steps: bool = False):
-    initial_node_index = np.random.choice(len(g))
-    initial_node = list(g)[initial_node_index]
+    initial_node = select_random_tuple_from_list(list(g))
 
     # Initialize node lists and time accumulator
     route = [initial_node]
@@ -62,9 +72,8 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
             print('Suitable neighbours:', suitable_neighbours)
 
         # Choose random neighbour from list of suitable neighbours if list nonempty
-        if len(suitable_neighbours) > 0:
-            n_index = np.random.choice(np.arange(len(suitable_neighbours)))
-            plan.append(suitable_neighbours[n_index])
+        if suitable_neighbours:
+            plan.append(select_random_tuple_from_list(suitable_neighbours))
         else:
             # Perform a step
             try:
