@@ -11,13 +11,9 @@ def diff(new, old, edge_length):
     """
     Implement the correct distance over boundaries
     """
-    dx = new[0] - old[0]
-    if np.abs(dx) > edge_length / 2:
-        dx = -1 * np.sign(dx) * edge_length + dx
-    dy = new[1] - old[1]
-    if np.abs(dy) > edge_length / 2:
-        dy = -1 * np.sign(dy) * edge_length + dy
-    return dx, dy
+    dr = np.array(new) - np.array(old)
+    dr = np.where(np.abs(dr) > edge_length / 2, -edge_length * np.sign(dr) + dr, dr)
+    return dr[0], dr[1]
 
 
 def select_random_tuple_from_list(tuple_list: List[Tuple]) -> Tuple:
