@@ -23,19 +23,20 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
     initial_node_index = np.random.choice(len(g))
     initial_node = list(g)[initial_node_index]
 
-    route = []
+    # Initialize node lists and time accumulator
+    route = [initial_node]
     plan = []
     steps = []
-    # First step is random
-    n_0 = list(g[initial_node])
-    plan_index = np.random.choice(np.arange(len(n_0)))
-    plan.append(n_0[plan_index])
-    route.append(initial_node)
     t = 0
 
     while len(route) < reps:
-        # Get neighbours of last node in plan
-        neighbours = list(g[plan[-1]])
+        # Get possible neighbours
+        if plan:
+            # If there is a planned route, get neighbours of the last node in the plan
+            neighbours = list(g[plan[-1]])
+        else:
+            # Else get the neighbors of the last visited node
+            neighbours = list(g[route[-1]])
 
         # Check suitability of neighbours
         suitables = []
