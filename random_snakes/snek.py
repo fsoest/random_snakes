@@ -71,25 +71,27 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
             print('Neighbours:', neighbours)
             print('Suitable neighbours:', suitable_neighbours)
 
-        # Choose random neighbour from list of suitable neighbours if list nonempty
         if suitable_neighbours:
+            # Choose random neighbour from list of suitable neighbours
             plan.append(select_random_tuple_from_list(suitable_neighbours))
         else:
             # Perform a step
-            try:
-                dx, dy = diff(plan[0], route[-1], lattice_size)
-            except:
+            if points is not None:
+                # An embedding is provided, use it to calculate the distances
                 dx, dy = diff(points[plan[0]], points[route[-1]], lattice_size)
+            else:
+                # The nodes provide also signify their position
+                dx, dy = diff(plan[0], route[-1], lattice_size)
+
             # Calculate time of step, given by 2-norm of dx, dy
             t += np.sqrt(dx ** 2 + dy ** 2)
-            step = {
+            steps.append({
                 'old': route[-1],
                 'new': plan[0],
                 'dx': dx,
                 'dy': dy,
                 't': t
-            }
-            steps.append(step)
+            })
             route.append(plan.pop(0))
     return route, steps
 
