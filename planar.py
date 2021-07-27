@@ -2,7 +2,7 @@ import numpy as np
 from scipy.spatial import Delaunay
 import matplotlib.pyplot as plt
 import networkx as nx
-from snek import diff
+from random_snakes.snek import diff
 
 
 def plot_edges(nodes, edges, c='k'):

@@ -1,8 +1,8 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from snek import random_snake, make_r
-from save import load_obj
+from random_snakes.snek import random_snake
+from random_snakes.save import load_obj
 
 if __name__ == '__main__':
     np.random.seed(42)
