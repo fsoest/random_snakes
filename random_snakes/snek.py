@@ -31,6 +31,7 @@ def select_random_tuple_from_list(tuple_list: List[Tuple]) -> Tuple:
 
 def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattice_size: int, reps: int = 50,
                  points=None, print_steps: bool = False):
+    # Start at a random node
     initial_node = select_random_tuple_from_list(list(g))
 
     # Initialize node lists and time accumulator
@@ -85,6 +86,7 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
 
             # Calculate time of step, given by 2-norm of dx, dy
             t += np.sqrt(dx ** 2 + dy ** 2)
+            # Store the properties of the step
             steps.append({
                 'old': route[-1],
                 'new': plan[0],
@@ -92,6 +94,7 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
                 'dy': dy,
                 't': t
             })
+            # Move to the next node in the plan
             route.append(plan.pop(0))
     return route, steps
 
