@@ -1,25 +1,25 @@
-from typing import Dict, Any
-import numpy as np
+from typing import Any
+from typing import Dict
+
 import networkx as nx
+import numpy as np
 
 
-def diff(new, old, L):
+def diff(new, old, edge_length):
     """
     Implement the correct distance over boundaries
-    :param a:
-    :param b:
-    :return:
     """
     dx = new[0] - old[0]
-    if np.abs(dx) > L / 2:
-        dx = -1 * np.sign(dx) * L + dx
+    if np.abs(dx) > edge_length / 2:
+        dx = -1 * np.sign(dx) * edge_length + dx
     dy = new[1] - old[1]
-    if np.abs(dy) > L / 2:
-        dy = -1 * np.sign(dy) * L + dy
-    return (dx, dy)
+    if np.abs(dy) > edge_length / 2:
+        dy = -1 * np.sign(dy) * edge_length + dy
+    return dx, dy
 
 
-def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattice_size: int, reps: int = 50, points=None):
+def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattice_size: int, reps: int = 50,
+                 points=None, print_steps: bool = False):
     initial_node_index = np.random.choice(len(g))
     initial_node = list(g)[initial_node_index]
 
@@ -34,15 +34,10 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
     t = 0
 
     while len(route) < reps:
-        # Get neighbours of last node in plan or x_0
-        try:
-            neighbours = list(g[plan[-1]])
-        except:
-            neighbours = list(g[route[-1]])
-        # print('Plan', plan)
-        # print('route', route)
-        # print('neighbours', neighbours)
-        # # Check suitability of neighbours
+        # Get neighbours of last node in plan
+        neighbours = list(g[plan[-1]])
+
+        # Check suitability of neighbours
         suitables = []
         for n in neighbours:
             # Check for empty plan
@@ -51,7 +46,13 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
                     suitables.append(n)
             else:
                 suitables = list(g[route[-1]])
-        # print('suitables', suitables)
+
+        if print_steps:
+            print('Plan', plan)
+            print('Route', route)
+            print('Neighbours', neighbours)
+            print('Suitable neighbours:', suitables)
+
         # Choose random neighbour from list of suitable neighbours if list nonempty
         if len(suitables) > 0:
             n_index = np.random.choice(np.arange(len(suitables)))
