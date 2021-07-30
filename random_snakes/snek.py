@@ -37,65 +37,64 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
     t = 0
 
     while len(route) <= reps:
-        # Get a list of suitable neighbours
-        if plan:
-            # There is a planned route, get neighbours of the last node in the plan
-            neighbours = list(g[plan[-1]])
+        if print_steps:
+            print(f't = {t:.2f}, route {route}')
+
+        # Populate the plan
+        while True:
+            last_planned_node = plan[-1] if plan else route[-1]
+            neighbours = list(g[last_planned_node])
 
             # Filter the neighbors
             suitable_neighbours = [
                 n for n in neighbours
                 if (
                         # This is the fastest route to the node
-                        np.abs(spl[route[-1]][n] - spl[route[-1]][plan[-1]] - spl[plan[-1]][n]) < 1e-16
+                        not plan or (np.abs(spl[route[-1]][n] - spl[route[-1]][plan[-1]] - spl[plan[-1]][n]) < 1e-16)
                         # The node is within distance d of the current node
                         and spl[route[-1]][n] <= d
                 )
             ]
-        else:
-            # Get the neighbors of the last visited node
-            neighbours = list(g[route[-1]])
 
-            # Check if they are within distance d
-            suitable_neighbours = [
-                n for n in neighbours
-                if spl[route[-1]][n] <= d
-            ]
+            if print_steps:
+                print('Plan', plan)
+                print('Last planned node', last_planned_node)
+                print('Neighbors', neighbours)
+                print('Suitable neighbors', suitable_neighbours)
+
+            if suitable_neighbours:
+                # Add one of the suitable neighbors to the plan
+                new_planned_node = select_random_tuple_from_list(suitable_neighbours)
+                print(f'Adding {new_planned_node} to plan')
+                plan.append(new_planned_node)
+            else:
+                print('No suitable neighbor!')
+                break
+
+        # Perform a step
+        if points is not None:
+            # An embedding is provided, use it to calculate the distances
+            dx, dy = diff(points[plan[0]], points[route[-1]], lattice_size)
+        else:
+            # The nodes provide also signify their position
+            dx, dy = diff(plan[0], route[-1], lattice_size)
+
+        # Calculate time of step, given by 2-norm of dx, dy
+        t += np.sqrt(dx ** 2 + dy ** 2)
+        # Store the properties of the step
+        steps.append({
+            'old': route[-1],
+            'new': plan[0],
+            'dx': dx,
+            'dy': dy,
+            't': t
+        })
+        # Move to the next node in the plan
+        route.append(plan.pop(0))
 
         if print_steps:
-            print('Plan', plan)
-            print('Route', route)
-            print('Neighbours:', neighbours)
-            print('Suitable neighbours:', suitable_neighbours)
-
-            for n in neighbours:
-                print('Last point to neighbour', spl[route[-1]][n])
+            print(f'Stepping: {steps[-1]}')
             print()
-
-        if suitable_neighbours:
-            # Choose random neighbour from list of suitable neighbours
-            plan.append(select_random_tuple_from_list(suitable_neighbours))
-        else:
-            # Perform a step
-            if points is not None:
-                # An embedding is provided, use it to calculate the distances
-                dx, dy = diff(points[plan[0]], points[route[-1]], lattice_size)
-            else:
-                # The nodes provide also signify their position
-                dx, dy = diff(plan[0], route[-1], lattice_size)
-
-            # Calculate time of step, given by 2-norm of dx, dy
-            t += np.sqrt(dx ** 2 + dy ** 2)
-            # Store the properties of the step
-            steps.append({
-                'old': route[-1],
-                'new': plan[0],
-                'dx': dx,
-                'dy': dy,
-                't': t
-            })
-            # Move to the next node in the plan
-            route.append(plan.pop(0))
     return route, steps
 
 
