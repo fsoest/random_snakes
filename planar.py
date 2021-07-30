@@ -48,16 +48,17 @@ def make_planar_graph(n_points: int, lattice_size: float = 1.):
 
     # Add the edges to the graph
     for simplex in simplices:
-        graph.add_edges_from([
-            (simplex[0], simplex[1]),
-            (simplex[1], simplex[2]),
-            (simplex[2], simplex[0]),
-        ])
-
+        for i, j in [(0, 1), (1, 2), (2, 0)]:
+            graph.add_edge(
+                simplex[i],
+                simplex[j],
+                weight=np.linalg.norm(diff(points[simplex[i]], points[simplex[j]], lattice_size))
+            )
     return graph, points
 
 
 if __name__ == '__main__':
+    np.random.seed(42)
     # Generate a graph with 10 points
     g, points = make_planar_graph(10)
 
