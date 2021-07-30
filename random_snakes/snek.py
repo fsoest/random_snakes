@@ -42,7 +42,8 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
 
         # Populate the plan
         while True:
-            last_planned_node = plan[-1] if plan else route[-1]
+            current_node = route[-1]
+            last_planned_node = plan[-1] if plan else current_node
             neighbours = list(g[last_planned_node])
 
             # Filter the neighbors
@@ -50,9 +51,9 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
                 n for n in neighbours
                 if (
                         # This is the fastest route to the node
-                        not plan or (np.abs(spl[route[-1]][n] - spl[route[-1]][plan[-1]] - spl[plan[-1]][n]) < 1e-16)
+                        not plan or (np.abs(spl[current_node][n] - spl[current_node][last_planned_node] - spl[last_planned_node][n]) < 1e-16)
                         # The node is within distance d of the current node
-                        and spl[route[-1]][n] <= d
+                        and spl[current_node][n] <= d
                 )
             ]
 
