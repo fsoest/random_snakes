@@ -13,7 +13,7 @@ def plot_edge(node_embedding: np.ndarray, edge: Tuple[Any, Any], **plot_kwargs):
     plt.plot(nodes[:, 0], nodes[:, 1], **plot_kwargs)
 
 
-def make_planar_graph(n_points: int, lattice_size: float = 1.):
+def make_planar_graph(n_points: int, lattice_size: float = 1.) -> Tuple[nx.Graph, np.ndarray]:
     # Randomly draw points from the defined bounds
     points = np.random.uniform(0, lattice_size, (n_points, 2))
 
