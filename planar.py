@@ -1,3 +1,6 @@
+from typing import Any
+from typing import Tuple
+
 import numpy as np
 from scipy.spatial import Delaunay
 import matplotlib.pyplot as plt
@@ -5,14 +8,9 @@ import networkx as nx
 from random_snakes.snek import diff
 
 
-def plot_edges(nodes, edges, c='k'):
-    node_1 = nodes[edges[0]]
-    node_2 = nodes[edges[1]]
-    x_1 = node_1[0]
-    x_2 = node_2[0]
-    y_1 = node_1[1]
-    y_2 = node_2[1]
-    plt.plot(np.array([x_1, x_2]), np.array([y_1, y_2]), c=c)
+def plot_edge(node_embedding: np.ndarray, edge: Tuple[Any, Any], **plot_kwargs):
+    nodes = node_embedding[edge, :]
+    plt.plot(nodes[:, 0], nodes[:, 1], **plot_kwargs)
 
 
 def make_planar_graph(n_points):
@@ -60,7 +58,7 @@ if __name__ == '__main__':
 
     # Draw graph with the real node positions
     for edge in g.edges:
-        plot_edges(points, edge)
+        plot_edge(points, edge)
     plt.show()
 
     # Draw graph with a force layout
