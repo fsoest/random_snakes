@@ -13,43 +13,48 @@ def plot_edge(node_embedding: np.ndarray, edge: Tuple[Any, Any], **plot_kwargs):
     plt.plot(nodes[:, 0], nodes[:, 1], **plot_kwargs)
 
 
-def make_planar_graph(n_points):
-    a = [0, 1, -1]
-    points = np.random.uniform(0, 1, (n_points, 2))
+def make_planar_graph(n_points: int, lattice_size: float = 1.):
+    # Randomly draw points from the defined bounds
+    points = np.random.uniform(0, lattice_size, (n_points, 2))
+
+    # Create empty array to store the periodic extension
     periodic = np.zeros((9 * n_points, 2))
 
+    # Extend the lattice in a 3x3 array
+    a = [0, 1, -1]
     k = 0
     for i in a:
         for j in a:
-            shift = np.zeros((n_points, 2))
-            shift[:, 0] = points[:, 0] + i
-            shift[:, 1] = points[:, 1] + j
+            shift = points + np.array([i, j]) * lattice_size
             periodic[k * n_points: (k + 1) * n_points] = shift
             k += 1
+
+    # Calculate the Delaunay triangulation over the periodic extension
     tri = Delaunay(periodic)
-    simplices = []
-    for simplex in tri.simplices:
-        if min(simplex) < n_points:
-            simplices.append(simplex)
+
+    # Determine the triangles that contain at least one node in the original lattice
+    simplices = [
+        simplex for simplex in tri.simplices
+        if min(simplex) < n_points
+    ]
+
+    # TODO ???
     simplices = np.array(simplices) % n_points
     simplices = np.sort(simplices, axis=1)
     simplices = np.unique(simplices, axis=0)
 
-    edges = []
-    for simplex in simplices:
-        edges.append((simplex[0], simplex[1]))
-        edges.append((simplex[1], simplex[2]))
-        edges.append((simplex[0], simplex[2]))
-    edges = np.unique(np.array(edges), axis=0)
+    # Create the networkx graph
+    g = nx.Graph()
 
-    # Create the networkx Graph
-    G = nx.Graph()
-    # Add nodes
-    G.add_nodes_from(np.arange(n_points))
-    # Add edges
-    for edge in edges:
-        G.add_edge(edge[0], edge[1], weight=np.linalg.norm(diff(points[edge[0]], points[edge[1]], 1)))
-    return G, points
+    # Add the edges to the graph
+    for simplex in simplices:
+        g.add_edges_from([
+            (simplex[0], simplex[1]),
+            (simplex[1], simplex[2]),
+            (simplex[2], simplex[0]),
+        ])
+
+    return g, points
 
 
 if __name__ == '__main__':
