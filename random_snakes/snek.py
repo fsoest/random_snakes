@@ -36,7 +36,7 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
     steps = []
     t = 0
 
-    while len(route) < reps:
+    while len(route) <= reps:
         # Get a list of suitable neighbours
         if plan:
             # There is a planned route, get neighbours of the last node in the plan
@@ -68,6 +68,10 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
             print('Neighbours:', neighbours)
             print('Suitable neighbours:', suitable_neighbours)
 
+            for n in neighbours:
+                print('Last point to neighbour', spl[route[-1]][n])
+            print()
+
         if suitable_neighbours:
             # Choose random neighbour from list of suitable neighbours
             plan.append(select_random_tuple_from_list(suitable_neighbours))
@@ -97,9 +101,9 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
 
 def make_r(steps):
     # Generate the time array
-    t_arr = np.array([0] + [step['t'] for step in steps])
+    t_arr = np.array([step['t'] for step in steps])
 
     # Generate the r array by adding up the steps
-    dr_arr = np.array([(0, 0)] + [(step['dx'], step['dy']) for step in steps])
+    dr_arr = np.array([(step['dx'], step['dy']) for step in steps])
     r_arr = np.cumsum(dr_arr, axis=0)
     return r_arr, t_arr

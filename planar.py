@@ -17,7 +17,6 @@ def plot_edges(nodes, edges, c='k'):
 
 def make_planar_graph(n_points):
     a = [0, 1, -1]
-    n_points = 10
     points = np.random.uniform(0, 1, (n_points, 2))
     periodic = np.zeros((9 * n_points, 2))
 
