@@ -58,7 +58,6 @@ def make_planar_graph(n_points: int, lattice_size: float = 1.):
 
 
 if __name__ == '__main__':
-    np.random.seed(42)
     # Generate a graph with 10 points
     g, points = make_planar_graph(10)
 
