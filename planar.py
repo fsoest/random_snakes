@@ -38,23 +38,23 @@ def make_planar_graph(n_points: int, lattice_size: float = 1.):
         if min(simplex) < n_points
     ]
 
-    # TODO ???
+    # Transform the indices back into the original square, remove duplicates
     simplices = np.array(simplices) % n_points
     simplices = np.sort(simplices, axis=1)
     simplices = np.unique(simplices, axis=0)
 
     # Create the networkx graph
-    g = nx.Graph()
+    graph = nx.Graph()
 
     # Add the edges to the graph
     for simplex in simplices:
-        g.add_edges_from([
+        graph.add_edges_from([
             (simplex[0], simplex[1]),
             (simplex[1], simplex[2]),
             (simplex[2], simplex[0]),
         ])
 
-    return g, points
+    return graph, points
 
 
 if __name__ == '__main__':
