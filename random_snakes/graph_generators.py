@@ -27,7 +27,7 @@ class GraphGenerator:
 
 
 class PlanarGraph(GraphGenerator):
-    def __init__(self, n_points: int, lattice_size: float):
+    def __init__(self, n_points: int, lattice_size: float = 1.):
         self.extended_embedding = None
         self.triangulation = None
         super().__init__(n_points, lattice_size)
@@ -73,3 +73,31 @@ class PlanarGraph(GraphGenerator):
                     simplex[j],
                     weight=np.linalg.norm(diff(self.embedding[simplex[i]], self.embedding[simplex[j]], self.lattice_size))
                 )
+
+    def plot_graph(self, ax: plt.Axes):
+        # Set the axis limits
+        ax.set_xlim(0, self.lattice_size)
+        ax.set_ylim(0, self.lattice_size)
+
+        # Plot the edges
+        for simplex in self.triangulation.simplices:
+            # Skip edges that don't have at least one node in the central area
+            if min(simplex) >= self.n_points:
+                continue
+
+            # Plot the edges of each triangle
+            for i, j in [(0, 1), (1, 2), (2, 0)]:
+                edge_arr = np.stack([
+                    self.extended_embedding[simplex[i]],
+                    self.extended_embedding[simplex[j]]
+                ])
+
+                ax.plot(
+                    edge_arr[:, 0],
+                    edge_arr[:, 1],
+                    c='gray',
+                    ls='-'
+                )
+
+        # Plot the points
+        ax.plot(self.extended_embedding[:, 0], self.extended_embedding[:, 1], 'k.', ms=16)
