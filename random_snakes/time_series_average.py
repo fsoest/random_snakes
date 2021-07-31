@@ -15,7 +15,7 @@ def average_time_series(series: List[np.ndarray]) -> Tuple[np.ndarray, np.ndarra
     t_max = np.min([s[:, 0].max() for s in series])
 
     # Only use time values below t_max
-    t_arr = t_arr[np.argwhere(t_arr <= t_max)]
+    t_arr = t_arr[np.argwhere(t_arr <= t_max)].flatten()
 
     # Generate linear interpolation arrays
     interpolated_array = np.stack([
