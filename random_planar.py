@@ -1,5 +1,4 @@
 import networkx as nx
-from planar import make_planar_graph, plot_edge
 import numpy as np
 
 from random_snakes.graph_generators import PlanarGraph
