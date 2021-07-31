@@ -1,3 +1,6 @@
+from multiprocessing import Pool
+from typing import Tuple
+
 import networkx as nx
 import numpy as np
 
@@ -6,6 +9,15 @@ from random_snakes.snek import random_snake, make_r
 from random_snakes.time_series_average import average_time_series
 import matplotlib.pyplot as plt
 
+
+def calculate_mean_displacement(d: float) -> Tuple[np.ndarray, np.ndarray]:
+    displacement_series = []
+    for i in range(walks):
+        route, steps = random_snake(G, d, spl, lattice_size=1, points=points, t_max=t_max, verbose=False)
+        r, t = make_r(steps)
+        r_abs = np.sqrt(np.sum(r ** 2, axis=1))
+        displacement_series.append(np.stack([t, r_abs], axis=1))
+    return average_time_series(displacement_series)
 
 if __name__ == '__main__':
     seed = np.random.randint(0, 255)
@@ -23,15 +35,8 @@ if __name__ == '__main__':
     points = planar_graph.embedding
     spl = dict(nx.all_pairs_dijkstra_path_length(G))
 
-    mean_displacement_series = []
-    for d in d_arr:
-        displacement_series = []
-        for i in range(walks):
-            route, steps = random_snake(G, d, spl, lattice_size=1, points=points, t_max=t_max, verbose=False)
-            r, t = make_r(steps)
-            r_abs = np.sqrt(np.sum(r ** 2, axis=1))
-            displacement_series.append(np.stack([t, r_abs], axis=1))
-        mean_displacement_series.append(average_time_series(displacement_series))
+    with Pool() as p:
+        mean_displacement_series = p.map(calculate_mean_displacement, d_arr)
 
     fig, ax = plt.subplots(figsize=(10, 10), dpi=300, tight_layout=True)
     ax.set_xlabel('$t$')
