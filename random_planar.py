@@ -8,23 +8,21 @@ import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     seed = np.random.randint(0, 255)
-    #seed = 421
     np.random.seed(seed)
     print(seed)
 
 
     # seed = 42
-    n_points = 500
+    n_points = 100
     walk_length = 10
     walks = 1
     # np.random.seed(seed)
     G, points = make_planar_graph(n_points)
     spl = dict(nx.all_pairs_dijkstra_path_length(G))
     for i in range(walks):
-        route, steps = random_snake(G, 0.1, spl, lattice_size=1, points=points, reps=walk_length, print_steps=True)
+        route, steps = random_snake(G, 0.5, spl, lattice_size=1, points=points, reps=walk_length, verbose=True)
         r, t = make_r(steps)
         #plt.scatter(t, np.linalg.norm(r, axis=1), marker='.')
-
         r_abs = points[route[0]] + r
         plt.figure(figsize=(10, 10), dpi=300, tight_layout=True)
         plt.axis('equal')
