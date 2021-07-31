@@ -13,8 +13,8 @@ if __name__ == '__main__':
     print(seed)
 
     n_points = 100
-    walk_length = 10
-    walks = 1
+    t_max = 10
+    walks = 10
     d = 0
 
 
@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     spl = dict(nx.all_pairs_dijkstra_path_length(G))
     for i in range(walks):
-        route, steps = random_snake(G, d, spl, lattice_size=1, points=points, reps=walk_length, verbose=True)
+        route, steps = random_snake(G, d, spl, lattice_size=1, points=points, t_max=10, verbose=True)
         r, t = make_r(steps)
 
         r_abs = points[route[0]] + r

@@ -25,7 +25,7 @@ def select_random_tuple_from_list(tuple_list: List[Tuple]) -> Tuple:
     return tuple_list[ind]
 
 
-def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattice_size: int, reps: int = 50,
+def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattice_size: int, t_max: float,
                  points=None, verbose: bool = False):
     # Start at a random node
     initial_node = select_random_tuple_from_list(list(g))
@@ -36,7 +36,7 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
     steps = []
     t = 0
 
-    while len(route) <= reps:
+    while t < t_max:
         if verbose:
             print(f't = {t:.2f}, route {route}')
 
