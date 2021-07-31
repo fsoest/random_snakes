@@ -1,22 +1,21 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+
+from random_snakes.graph_generators import LatticeGraph
 from random_snakes.snek import random_snake
-from random_snakes.save import load_obj
 
 if __name__ == '__main__':
     np.random.seed(42)
-    lattice_size = 50
-    square_lattice = nx.grid_graph((lattice_size, lattice_size), periodic=True)
-    # spl = dict(nx.all_pairs_shortest_path_length(square_lattice))
-    spl = load_obj('spl_50')
-    route, steps = random_snake(square_lattice, 16, spl, lattice_size, reps=100)
+    lattice_size = 10
+    square_lattice = LatticeGraph(lattice_size)
 
-    xx, yy = np.meshgrid(np.arange(lattice_size), np.arange(lattice_size))
-
+    spl = dict(nx.all_pairs_shortest_path_length(square_lattice.graph))
+    route, steps = random_snake(square_lattice.graph, 16, spl, lattice_size, t_max=10)
     route = np.array(route)
 
-    plt.scatter(xx, yy, c='k', marker='.', alpha=0.1)
-    plt.scatter(route[0, 0], route[0,1], c='b')
-    plt.scatter(route[1:, 0], route[1:, 1], c='r')
+    fig, ax = plt.subplots()
+    square_lattice.plot_graph(ax)
+    ax.scatter(route[0, 0], route[0,1], c='b')
+    ax.scatter(route[1:, 0], route[1:, 1], c='r')
     plt.show()
