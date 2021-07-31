@@ -76,34 +76,28 @@ class PlanarGraph(GraphGenerator):
 
     def plot_graph(self, ax: plt.Axes):
         # Set the axis limits
-        #ax.set_xlim(0, self.lattice_size)
-        #ax.set_ylim(0, self.lattice_size)
+        ax.axis('equal')
 
-        # Plot the edges
-        for simplex in self.triangulation.simplices:
-            # Skip edges that don't have at least one node in the central area
-            alpha = 1
-            if min(simplex) >= self.n_points:
-                alpha = .5
+        # Plot the edges:
+        # Create an array with shape ([start, end], n_edges, [x, y])
+        edge_arr = np.stack([
+            np.stack([
+                self.extended_embedding[simplex[i]],
+                self.extended_embedding[simplex[j]]
+            ])
+            for i, j in [(0, 1), (1, 2), (2, 0)]
+            for simplex in self.triangulation.simplices
+        ], axis=1)
 
-            # Plot the edges of each triangle
-            for i, j in [(0, 1), (1, 2), (2, 0)]:
-                edge_arr = np.stack([
-                    self.extended_embedding[simplex[i]],
-                    self.extended_embedding[simplex[j]]
-                ])
+        # Plot the array
+        ax.plot(
+            edge_arr[:, :, 0],
+            edge_arr[:, :, 1],
+            c='gray',
+            ls='-',
+        )
 
-                ax.plot(
-                    edge_arr[:, 0],
-                    edge_arr[:, 1],
-                    c='gray',
-                    ls='-',
-                    alpha=alpha
-                )
-
-        # Plot the points
-        ax.plot(self.extended_embedding[:, 0], self.extended_embedding[:, 1], 'k.', ms=8)
-
+        # Draw lines where the graph repeats
         for i in [0, 1]:
             ax.axhline(i * self.lattice_size, c='k')
             ax.axvline(i * self.lattice_size, c='k')
