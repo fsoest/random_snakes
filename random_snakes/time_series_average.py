@@ -10,11 +10,9 @@ def average_time_series(series: List[np.ndarray]) -> Tuple[np.ndarray, np.ndarra
     t_arr = np.concatenate([s[:, 0] for s in series])
     t_arr = np.unique(t_arr)
     t_arr = np.sort(t_arr)
-    print(t_arr)
 
     # Compute the minimum final time
     t_max = np.min([s[:, 0].max() for s in series])
-    print(t_max)
 
     # Only use time values below t_max
     t_arr = t_arr[np.argwhere(t_arr <= t_max)]
