@@ -66,11 +66,12 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
             if suitable_neighbours:
                 # Add one of the suitable neighbors to the plan
                 new_planned_node = select_random_tuple_from_list(suitable_neighbours)
-                print(f'Adding {new_planned_node} to plan')
+                if verbose:
+                    print(f'Adding {new_planned_node} to plan')
                 plan.append(new_planned_node)
             else:
-                print('No suitable neighbor!')
                 if verbose:
+                    print('No suitable neighbor!')
                     print(' n |  sp route[-1] -> n |    tri cond    |    d cond')
                     print('----------------------------------------------------')
                     for n in neighbours:
