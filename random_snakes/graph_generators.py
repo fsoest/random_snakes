@@ -10,12 +10,16 @@ from random_snakes.snek import diff
 
 class GraphGenerator:
     def __init__(self, n_points: int, lattice_size: float):
+        # Initialize attributes
         self.lattice_size = lattice_size
         self.n_points = n_points
+        self.graph = None
+        self.embedding = None
 
-        self.graph, self.embedding = self._generate_graph()
+        # Generate the graph
+        self._generate_graph()
 
-    def _generate_graph(self) -> Tuple[nx.Graph, np.ndarray]:
+    def _generate_graph(self):
         raise NotImplementedError
 
     def plot_graph(self, ax: plt.Axes):
@@ -24,30 +28,32 @@ class GraphGenerator:
 
 class PlanarGraph(GraphGenerator):
     def __init__(self, n_points: int, lattice_size: float):
+        self.extended_embedding = None
+        self.triangulation = None
         super().__init__(n_points, lattice_size)
 
-    def _generate_graph(self) -> Tuple[nx.Graph, np.ndarray]:
+    def _generate_graph(self):
         # Randomly draw points from the defined bounds
-        points = np.random.uniform(0, self.lattice_size, (self.n_points, 2))
+        self.embedding = np.random.uniform(0, self.lattice_size, (self.n_points, 2))
 
         # Create empty array to store the periodic extension
-        periodic = np.zeros((9 * self.n_points, 2))
+        self.extended_embedding = np.zeros((9 * self.n_points, 2))
 
         # Extend the lattice in a 3x3 array
         a = [0, 1, -1]
         k = 0
         for i in a:
             for j in a:
-                shift = points + np.array([i, j]) * self.lattice_size
-                periodic[k * self.n_points: (k + 1) * self.n_points] = shift
+                shift = self.embedding + np.array([i, j]) * self.lattice_size
+                self.extended_embedding[k * self.n_points: (k + 1) * self.n_points] = shift
                 k += 1
 
         # Calculate the Delaunay triangulation over the periodic extension
-        tri = Delaunay(periodic)
+        self.triangulation = Delaunay(self.extended_embedding)
 
         # Determine the triangles that contain at least one node in the original lattice
         simplices = [
-            simplex for simplex in tri.simplices
+            simplex for simplex in self.triangulation.simplices
             if min(simplex) < self.n_points
         ]
 
@@ -65,6 +71,5 @@ class PlanarGraph(GraphGenerator):
                 graph.add_edge(
                     simplex[i],
                     simplex[j],
-                    weight=np.linalg.norm(diff(points[simplex[i]], points[simplex[j]], self.lattice_size))
+                    weight=np.linalg.norm(diff(self.embedding[simplex[i]], self.embedding[simplex[j]], self.lattice_size))
                 )
-        return graph, points
