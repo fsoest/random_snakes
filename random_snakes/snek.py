@@ -26,7 +26,7 @@ def select_random_tuple_from_list(tuple_list: List[Tuple]) -> Tuple:
 
 
 def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattice_size: int, reps: int = 50,
-                 points=None, print_steps: bool = False):
+                 points=None, verbose: bool = False):
     # Start at a random node
     initial_node = select_random_tuple_from_list(list(g))
 
@@ -37,7 +37,7 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
     t = 0
 
     while len(route) <= reps:
-        if print_steps:
+        if verbose:
             print(f't = {t:.2f}, route {route}')
 
         # Populate the plan
@@ -57,7 +57,7 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
                 )
             ]
 
-            if print_steps:
+            if verbose:
                 print('Plan', plan)
                 print('Last planned node', last_planned_node)
                 print('Neighbors', neighbours)
@@ -70,6 +70,11 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
                 plan.append(new_planned_node)
             else:
                 print('No suitable neighbor!')
+                if verbose:
+                    print(' n |  sp route[-1] -> n |    tri cond    |    d cond')
+                    print('----------------------------------------------------')
+                    for n in neighbours:
+                        print('{0} |  {1}   | {2}      |   {3}'.format(n, nx.dijkstra_path(g, current_node, n), np.abs(spl[current_node][n] - spl[current_node][last_planned_node] - spl[last_planned_node][n]) < 1e-16, spl[current_node][n] <= d))
                 break
 
         # Perform a step
@@ -93,7 +98,7 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
         # Move to the next node in the plan
         route.append(plan.pop(0))
 
-        if print_steps:
+        if verbose:
             print(f'Stepping: {steps[-1]}')
             print()
     return route, steps
