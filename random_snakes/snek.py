@@ -111,9 +111,9 @@ def random_snake(g: nx.Graph, d: float, spl: Dict[Any, Dict[Any, float]], lattic
 
 def make_r(steps):
     # Generate the time array
-    t_arr = np.array([step['t'] for step in steps])
+    t_arr = np.array([0] + [step['t'] for step in steps])
 
     # Generate the r array by adding up the steps
-    dr_arr = np.array([(step['dx'], step['dy']) for step in steps])
+    dr_arr = np.array([(0, 0)] + [(step['dx'], step['dy']) for step in steps])
     r_arr = np.cumsum(dr_arr, axis=0)
     return r_arr, t_arr

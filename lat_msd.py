@@ -23,6 +23,7 @@ if __name__ == '__main__':
             route, steps = random_snake(square_lattice, d, spl, lattice_size, reps=walk_length)
             md[i, j] = np.linalg.norm(make_r(steps)[0], ord=1, axis=1)
         plt.plot(np.mean(md[i], axis=0), label=d)
+    plt.plot([0, 100], [1, 101], 'k--')
     plt.legend(title='$d$')
     plt.xlabel('$t$')
     plt.ylabel('$\langle \ \|\| r(t) \|\|_1 \ \\rangle$ ')
