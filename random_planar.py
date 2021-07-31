@@ -19,6 +19,7 @@ def calculate_mean_displacement(d: float) -> Tuple[np.ndarray, np.ndarray]:
         displacement_series.append(np.stack([t, r_abs], axis=1))
     return average_time_series(displacement_series)
 
+
 if __name__ == '__main__':
     seed = np.random.randint(0, 255)
     np.random.seed(seed)
@@ -26,9 +27,8 @@ if __name__ == '__main__':
 
     n_points = 100
     t_max = 100
-    walks = 5
-    d_arr = np.linspace(0, 0.5, 5)
-
+    walks = 100
+    d_arr = np.linspace(0, 0.5, 15)
 
     planar_graph = PlanarGraph(n_points)
     G = planar_graph.graph
