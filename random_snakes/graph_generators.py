@@ -26,6 +26,14 @@ class GraphGenerator:
         raise NotImplementedError
 
 
+class LatticeGraph(GraphGenerator):
+    def _generate_graph(self):
+        self.graph = nx.grid_graph((self.lattice_size, self.lattice_size), periodic=True)
+        self.embedding = np.array(self.graph.nodes)
+
+    def plot_graph(self, ax: plt.Axes):
+        ax.plot(self.embedding, c='k', marker='.', alpha=0.1)
+
 class PlanarGraph(GraphGenerator):
     def __init__(self, n_points: int, lattice_size: float = 1.):
         self.extended_embedding = None
