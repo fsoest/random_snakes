@@ -63,12 +63,12 @@ class PlanarGraph(GraphGenerator):
         simplices = np.unique(simplices, axis=0)
 
         # Create the networkx graph
-        graph = nx.Graph()
+        self.graph = nx.Graph()
 
         # Add the edges to the graph
         for simplex in simplices:
             for i, j in [(0, 1), (1, 2), (2, 0)]:
-                graph.add_edge(
+                self.graph.add_edge(
                     simplex[i],
                     simplex[j],
                     weight=np.linalg.norm(diff(self.embedding[simplex[i]], self.embedding[simplex[j]], self.lattice_size))
@@ -76,14 +76,15 @@ class PlanarGraph(GraphGenerator):
 
     def plot_graph(self, ax: plt.Axes):
         # Set the axis limits
-        ax.set_xlim(0, self.lattice_size)
-        ax.set_ylim(0, self.lattice_size)
+        #ax.set_xlim(0, self.lattice_size)
+        #ax.set_ylim(0, self.lattice_size)
 
         # Plot the edges
         for simplex in self.triangulation.simplices:
             # Skip edges that don't have at least one node in the central area
+            alpha = 1
             if min(simplex) >= self.n_points:
-                continue
+                alpha = .5
 
             # Plot the edges of each triangle
             for i, j in [(0, 1), (1, 2), (2, 0)]:
@@ -96,8 +97,13 @@ class PlanarGraph(GraphGenerator):
                     edge_arr[:, 0],
                     edge_arr[:, 1],
                     c='gray',
-                    ls='-'
+                    ls='-',
+                    alpha=alpha
                 )
 
         # Plot the points
-        ax.plot(self.extended_embedding[:, 0], self.extended_embedding[:, 1], 'k.', ms=16)
+        ax.plot(self.extended_embedding[:, 0], self.extended_embedding[:, 1], 'k.', ms=8)
+
+        for i in [0, 1]:
+            ax.axhline(i * self.lattice_size, c='k')
+            ax.axvline(i * self.lattice_size, c='k')
