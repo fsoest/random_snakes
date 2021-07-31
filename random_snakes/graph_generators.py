@@ -31,7 +31,6 @@ class LatticeGraph(GraphGenerator):
     def _generate_graph(self):
         self.graph = nx.grid_graph((self.lattice_size, self.lattice_size), periodic=True)
         self.embedding = np.array(self.graph.nodes)
-        print(self.embedding.shape)
 
     def plot_graph(self, ax: plt.Axes):
         ax.plot(self.embedding[:, 0], self.embedding[:, 1], 'k.', alpha=0.1)
