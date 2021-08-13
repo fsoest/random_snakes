@@ -1,39 +1,13 @@
 from functools import partial
 from multiprocessing import Pool
-from typing import Tuple
 
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 from scipy.interpolate import interp1d
 
 from random_snakes.graph_generators import PlanarGraph
-from random_snakes.snek import random_snake, make_r
-from random_snakes.time_series_average import average_time_series
-import matplotlib.pyplot as plt
-
-
-def calculate_mean_displacement(
-        planning_distance: float,
-        graph: nx.Graph,
-        n_walks: int,
-        shortest_path_length: dict,
-        embedding: np.ndarray,
-        t_max: float
-) -> Tuple[np.ndarray, np.ndarray]:
-    displacement_series = []
-    for i in range(n_walks):
-        route, steps = random_snake(
-            graph, planning_distance, shortest_path_length,
-            lattice_size=1,
-            points=embedding,
-            t_max=t_max,
-            verbose=False
-        )
-        r, t = make_r(steps)
-        r_abs = np.sqrt(np.sum(r ** 2, axis=1))
-        displacement_series.append(np.stack([t, r_abs], axis=1))
-    return average_time_series(displacement_series)
-
+from random_snakes.snek import calculate_mean_displacement
 
 if __name__ == '__main__':
     seed = np.random.randint(0, 255)

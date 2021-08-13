@@ -6,6 +6,8 @@ from typing import Tuple
 import networkx as nx
 import numpy as np
 
+from random_snakes.time_series_average import average_time_series
+
 
 def diff(new, old, edge_length):
     """
@@ -117,3 +119,26 @@ def make_r(steps):
     dr_arr = np.array([(0, 0)] + [(step['dx'], step['dy']) for step in steps])
     r_arr = np.cumsum(dr_arr, axis=0)
     return r_arr, t_arr
+
+
+def calculate_mean_displacement(
+        planning_distance: float,
+        graph: nx.Graph,
+        n_walks: int,
+        shortest_path_length: dict,
+        embedding: np.ndarray,
+        t_max: float
+) -> Tuple[np.ndarray, np.ndarray]:
+    displacement_series = []
+    for i in range(n_walks):
+        route, steps = random_snake(
+            graph, planning_distance, shortest_path_length,
+            lattice_size=1,
+            points=embedding,
+            t_max=t_max,
+            verbose=False
+        )
+        r, t = make_r(steps)
+        r_abs = np.sqrt(np.sum(r ** 2, axis=1))
+        displacement_series.append(np.stack([t, r_abs], axis=1))
+    return average_time_series(displacement_series)
