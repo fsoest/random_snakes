@@ -1,3 +1,4 @@
+from functools import partial
 from multiprocessing import Pool
 from typing import Tuple
 
@@ -11,10 +12,23 @@ from random_snakes.time_series_average import average_time_series
 import matplotlib.pyplot as plt
 
 
-def calculate_mean_displacement(d: float) -> Tuple[np.ndarray, np.ndarray]:
+def calculate_mean_displacement(
+        planning_distance: float,
+        graph: nx.Graph,
+        n_walks: int,
+        shortest_path_length: dict,
+        embedding: np.ndarray,
+        t_max: float
+) -> Tuple[np.ndarray, np.ndarray]:
     displacement_series = []
-    for i in range(walks):
-        route, steps = random_snake(G, d, spl, lattice_size=1, points=points, t_max=t_max, verbose=False)
+    for i in range(n_walks):
+        route, steps = random_snake(
+            graph, planning_distance, shortest_path_length,
+            lattice_size=1,
+            points=embedding,
+            t_max=t_max,
+            verbose=False
+        )
         r, t = make_r(steps)
         r_abs = np.sqrt(np.sum(r ** 2, axis=1))
         displacement_series.append(np.stack([t, r_abs], axis=1))
@@ -36,8 +50,16 @@ if __name__ == '__main__':
     points = planar_graph.embedding
     spl = dict(nx.all_pairs_dijkstra_path_length(G))
 
+    mean_displacement_partial = partial(
+        calculate_mean_displacement,
+        graph=G,
+        n_walks=walks,
+        shortest_path_length=spl,
+        embedding=points,
+        t_max=t_max
+    )
     with Pool() as p:
-        mean_displacement_series = p.map(calculate_mean_displacement, d_arr)
+        mean_displacement_series = p.map(mean_displacement_partial, d_arr)
 
     plotting_t_arr = np.linspace(0, t_max, 2000)
 
