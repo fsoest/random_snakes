@@ -10,8 +10,8 @@ def main():
     np.random.seed(42)
     ds = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
     t_max = 50
-    n_graphs = 10
-    n_walks = 10
+    n_graphs = 35
+    n_walks = 35
 
     avg = []
 
@@ -34,9 +34,19 @@ def main():
 
     s = 2.3
 
-    ax.plot(t, s * t/10, 'k--')
-    ax.plot(t, s * np.sqrt(t)/10, 'k-.')
+    plot_max = np.amax(avg[-1][1])
+    plot_max *= 1.1
+    plot_max = int(plot_max + 4)
+
+
+    ax.plot([0, plot_max], [0, plot_max], 'k--', label='t')
+    ax.plot(t, np.sqrt(t)/10, 'k-.', label='$\sqrt{t} / 10$')
+    plt.xlabel('$t$')
+    plt.ylabel('$\mathcal{D}_2(t)$ ')
+
     ax.legend(title='d')
+    plt.loglog()
+    plt.savefig('figures/planar_msd.pdf')
     plt.show()
     
 

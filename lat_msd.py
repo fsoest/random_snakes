@@ -39,5 +39,6 @@ if __name__ == '__main__':
     plt.legend(title='$d$')
     plt.xlabel('$t$')
     plt.ylabel('$\mathcal{D}_1(t)$ ')
-    plt.savefig('figures/grid_msd.png', dpi=300)
+    plt.loglog()
+    plt.savefig('figures/grid_msd.pdf', )
     plt.show()
