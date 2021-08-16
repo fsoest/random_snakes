@@ -3,11 +3,8 @@ import networkx as nx
 import numpy as np
 
 from random_snakes.graph_generators import LatticeGraph
-
 from random_snakes.snek import make_r
 from random_snakes.snek import random_snake
-from random_snakes.time_series_average import average_time_series
-
 
 # Number of walks to average over
 n_walks = 1000
@@ -17,7 +14,7 @@ print(d_arr)
 # Maximum simulation time
 t_max = 100
 # Starting point of the correlation measurement
-t_0 = 2
+t_0 = 0
 
 # Initialize the graph
 graph = LatticeGraph(lattice_size=10)
@@ -27,13 +24,13 @@ correlation_series = []
 for d in d_arr:
     print(d)
     current_series = []
+    min_length = np.inf
     for i in range(n_walks):
         # Perform the walk
         route, steps = random_snake(
             graph.graph, d, spl,
             lattice_size=10,
             t_max=t_max,
-            #points=graph.embedding
         )
 
         # Calculate an array of the step direction and the
@@ -49,13 +46,14 @@ for d in d_arr:
             / np.linalg.norm(delta_r_0)
             / np.linalg.norm(delta_r_tau_arr, axis=1)
         )
-        current_series.append(np.stack([
-            np.arange(angle_arr.shape[0]),
-            angle_arr
-        ], axis=1))
+        current_series.append(angle_arr)
+        min_length = min(min_length, angle_arr.shape[0])
 
-    t_arr, avg_angle_arr = average_time_series(current_series)
-    plt.plot(avg_angle_arr, label=d)
+    avg_angle_arr = np.mean(np.stack([
+        arr[:min_length]
+        for arr in current_series
+    ], axis=1), axis=1)
+    plt.plot(avg_angle_arr, label=f'd = {d}')
 
 plt.xlabel(r'$\tau$')
 plt.ylabel(r'$\angle \ \vec{r}(t_0) \ \vec{r}(t_0 + \tau)$')
