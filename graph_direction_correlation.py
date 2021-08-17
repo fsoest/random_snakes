@@ -9,14 +9,13 @@ from random_snakes.snek import make_r
 from random_snakes.snek import random_snake
 
 # Number of walks to average over
-n_walks = 10000
+n_walks = 1000
 # Array of planning distance values
-d_arr = np.arange(0, 6)
+d_arr = np.arange(1, 6)
 print(d_arr)
 # Maximum simulation time
 t_max = 100
-# Starting point of the correlation measurement
-t_0 = 0
+min_length = 50
 
 # Initialize the graph
 graph = LatticeGraph(lattice_size=10)
@@ -28,7 +27,6 @@ fig, ax = plt.subplots(tight_layout=True)
 for d in d_arr:
     print(d)
     current_series = []
-    min_length = np.inf
     for i in range(n_walks):
         # Perform the walk
         route, steps = random_snake(
@@ -40,18 +38,16 @@ for d in d_arr:
         # Create an array of the step direction and determine the index of the t_0 step
         r_arr, t_arr = make_r(steps)
         delta_r_arr = r_arr[1:] - r_arr[:-1]
-        t_0_ind = np.argwhere(t_arr >= t_0)[0].item()
-
-        # Compute the angle between the initial step and future steps
-        delta_r_0 = delta_r_arr[t_0_ind]
-        delta_r_tau_arr = delta_r_arr[t_0_ind + 1:]
-        angle_arr = np.arccos(
-            np.sum(delta_r_0 * delta_r_tau_arr, axis=1)
-            / np.linalg.norm(delta_r_0)
-            / np.linalg.norm(delta_r_tau_arr, axis=1)
-        )
-        current_series.append(angle_arr)
-        min_length = min(min_length, angle_arr.shape[0])
+        for t_0_ind in range(0, delta_r_arr.shape[0] - min_length):
+            # Compute the angle between the initial step and future steps
+            delta_r_0 = delta_r_arr[t_0_ind]
+            delta_r_tau_arr = delta_r_arr[t_0_ind + 1:]
+            angle_arr = np.arccos(
+                np.sum(delta_r_0 * delta_r_tau_arr, axis=1)
+                / np.linalg.norm(delta_r_0)
+                / np.linalg.norm(delta_r_tau_arr, axis=1)
+            )
+            current_series.append(angle_arr)
 
     avg_angle_arr = np.mean(np.stack([
         arr[:min_length]
