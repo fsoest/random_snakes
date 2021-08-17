@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-from matplotlib.ticker import FormatStrFormatter
-from matplotlib.ticker import MultipleLocator
 
 from random_snakes.graph_generators import LatticeGraph
 from random_snakes.snek import make_r
@@ -42,7 +40,7 @@ for d in d_arr:
             # Compute the angle between the initial step and future steps
             delta_r_0 = delta_r_arr[t_0_ind]
             delta_r_tau_arr = delta_r_arr[t_0_ind + 1:]
-            angle_arr = np.arccos(
+            angle_arr = (
                 np.sum(delta_r_0 * delta_r_tau_arr, axis=1)
                 / np.linalg.norm(delta_r_0)
                 / np.linalg.norm(delta_r_tau_arr, axis=1)
@@ -53,14 +51,12 @@ for d in d_arr:
         arr[:min_length]
         for arr in current_series
     ], axis=1), axis=1)
-    ax.plot(avg_angle_arr / np.pi, label=f'd = {d}')
+    ax.plot(avg_angle_arr, label=f'd = {d}')
 
 ax.set_xlabel(r'$\tau$')
 ax.set_ylabel(r'$\phi(\tau)$')
-ax.set_ylim(0, 0.7)
+ax.set_yscale('log')
 ax.grid()
-ax.yaxis.set_major_formatter(FormatStrFormatter(r'%g $\pi$'))
-ax.yaxis.set_major_locator(MultipleLocator(base=0.5))
 ax.legend()
 fig.savefig('figs/graph_direction_correlation.pdf')
 plt.show()
